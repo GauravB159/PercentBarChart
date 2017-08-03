@@ -3,8 +3,8 @@ import { BarChart, Bar, Brush, Cell, CartesianGrid, ReferenceLine, ReferenceDot,
   XAxis, YAxis, Legend, ErrorBar, LabelList,Layer,ResponsiveContainer } from 'recharts';
 import { scaleOrdinal, schemeCategory10 } from 'd3-scale';
 import _ from 'lodash';
+import gradient from 'gradient-color';
 
-const colors = ["#1515DB", "#2E3CD7", "#4764D3", "#608BD0", "#79B3CC", "#93DBC9"];
 
 const renderLabelContent = (props) => {
   const { value, percent, x, y, midAngle,dataKey,width,height } = props;
@@ -16,9 +16,9 @@ const renderLabelContent = (props) => {
         heightc = w.innerHeight|| e.clientHeight|| g.clientHeight,
         fontSize;
     if(heightc > widthc)
-      fontSize="12px";
+      fontSize="11px";
     else
-      fontSize="9px";
+      fontSize="11px";
   return (
     <g className="custom-label" transform={`translate(${x+width+20}, ${y+height/2}) rotate(-90)`} textAnchor={ (midAngle < -90 || midAngle >= 90) ? 'end' : 'start'}>
       <text x={0} y={0} style={{fontSize:fontSize,fontFamily:"Helvetica"}}>{`${dataKey}`}</text>
@@ -30,15 +30,19 @@ const renderLabelContent = (props) => {
 const CustomTooltip = (props) => {
     const { mouseX,mouseY, payload, label,key,tooltipData,name,value,befData } = props.vals;
     return (
-        <div style={{backgroundColor:"white",border:"1px solid rgba(0,0,0,0.1)",boxShadow:"0px 2px 1px 1px rgba(0,0,0,0.2)",borderRadius:"5%",pointerEvents:'none',padding:"3px",top:mouseY,left:mouseX,width:"100px",height:"50px",position:"absolute"}}>
-          <table cellSpacing="0px" style={{backgroundColor:"white",width:"100px",height:"50px"}}>
+        <div style={{backgroundColor:"white",borderBottom:"1px solid rgba(0,0,0,0.1)",boxShadow:"0px 1px 1px 1px rgba(0,0,0,0.2)",borderRadius:"2px",pointerEvents:'none',padding:"3px",top:mouseY,left:mouseX,width:"150px",height:"80px",position:"absolute"}}>
+          <table cellSpacing="0px" style={{backgroundColor:"white",width:"150px",height:"80px"}}>
             <tbody>
               <tr>
-                <th  colSpan={2} style={{backgroundColor:"white",border:"1px solid rgba(0,0,0,0.1)",textAlign:"center",fontSize:"10px",fontFamily:"Helvetica"}}>{key}</th>
+                <th  colSpan={2} style={{backgroundColor:"white",borderBottom:"1px solid rgba(0,0,0,0.1)",textAlign:"left",fontSize:"12px",fontFamily:"Helvetica"}}>{key}</th>
               </tr>
               <tr>
-                <td style={{backgroundColor:"white",border:"1px solid rgba(0,0,0,0.1)",textAlign:"center",borderTop:"0px",borderRight:"0px",width:"50%",fontSize:"10px",fontFamily:"Helvetica"}}>{befData[key]}</td>
-                <td style={{backgroundColor:"white",border:"1px solid rgba(0,0,0,0.1)",textAlign:"center",borderTop:"0px",borderLeft:"1px dashed rgba(0,0,0,0.1)",fontSize:"10px",width:"50%",fontFamily:"Helvetica"}}>{"("+tooltipData+"%)"}</td>
+                <td style={{paddingLeft:"5px",backgroundColor:"white",textAlign:"left",width:"50%",fontSize:"12px",fontFamily:"Helvetica"}}>In Numbers</td>
+                <th style={{paddingRight:"5px",backgroundColor:"white",textAlign:"right",fontSize:"12px",width:"50%",fontFamily:"Helvetica"}}>{tooltipData}%</th>
+              </tr>
+              <tr>
+                <td style={{paddingLeft:"5px",backgroundColor:"white",textAlign:"left",width:"50%",fontSize:"12px",fontFamily:"Helvetica"}}>In Percent</td>
+                <th style={{paddingRight:"5px",backgroundColor:"white",textAlign:"right",fontSize:"12px",width:"50%",fontFamily:"Helvetica"}}>{befData[key]}</th>
               </tr>
             </tbody>
           </table>
@@ -91,16 +95,20 @@ export default class PBarChart extends Component {
     if(height > width)
       fontSize="12px";
     else
-      fontSize="9px";
+      fontSize="12px";
     width = height > width ? window.innerWidth-20 : window.innerHeight-20;
-
+    let dataObj = this.props.data;
+    let color = gradient([
+      '#255AEE',
+      '#9DD2FF'
+    ], dataObj.length);
     height = 100;
     this.setState({
       height:height,
       width:width,
-      fontSize:fontSize
+      fontSize:fontSize,
+      color:color
     })
-    let dataObj = this.props.data;
     let dat = {};
     let keys = Object.keys(dataObj[0]);
     dat["name"]=keys[0];
@@ -146,11 +154,17 @@ export default class PBarChart extends Component {
     bars.forEach((bar)=>{
       let check = bar.querySelector(".recharts-bar-rectangles").getBoundingClientRect().width;
       let text = bar.querySelector(".custom-label text");
+      let label = bar.querySelector(".recharts-text.recharts-label");
+      console.log(label);
+      let check2 = label.getBoundingClientRect().width;;
       let comp = text.getBoundingClientRect().width;
       text.setAttribute('x',-comp/2);
       if(comp > check ){
         text.style.fill="none";
         bar.querySelector(".custom-label line").style.stroke="none";
+      }
+      if(check2 > check-6){
+        label.style.fill="none";
       }
     })
   }
@@ -173,8 +187,8 @@ export default class PBarChart extends Component {
                 Object.keys(data[0]).map((key,index)=>{
                   if(key === 'name' || key === 'value') return;
                   return(
-                      <Bar stackId="0" key={key} dataKey={key} fill={colors[index]} isAnimationActive = {false} label={renderLabelContent} onMouseLeave={this.handleMouseLeave} onMouseMove={this.handleMouseMove}>
-                        <LabelList dataKey={key} horizontal={true} perc={true} style={{fontFamily:"Helvetica",fill:"white",fontSize:this.state.fontSize,pointerEvents:'none'}}/>
+                      <Bar stackId="0" key={key} dataKey={key} fill={this.state.color[index]} isAnimationActive = {false} label={renderLabelContent} onMouseLeave={this.handleMouseLeave} onMouseMove={this.handleMouseMove}>
+                        <LabelList dataKey={key} horizontal={true} className="custom" perc={true} style={{fontFamily:"Helvetica",fill:"white",fontSize:this.state.fontSize,pointerEvents:'none'}}/>
                       </Bar>
                   );
                 })

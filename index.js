@@ -6,7 +6,7 @@ import PBarChart from './BarChart';
 const data = [
   {
     "category": "Cattle Protection",
-    "count": 70
+    "count": 90
   },
   {
     "category": "Crime",
@@ -18,7 +18,7 @@ const data = [
   },
   {
     "category": "Other",
-    "count": 19
+    "count": 10
   },
   {
     "category": "Sexual Harrassment",
