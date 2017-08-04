@@ -53,11 +53,12 @@ const CustomTooltipLaptop = (props) => {
 
 const CustomTooltipMobile = (props) => {
     const { mouseX,mouseY, payload, marginLeft,label,width,height,bar,key,tooltipData,name,value,befData } = props.vals;
-    console.log(props);
+    let elem = bar.getBoundingClientRect()
     let left = width/3;
-    let top = bar.getBoundingClientRect().height-45;
+    let top = elem.height-45;
+    console.log(props);
     return (
-        <div style={{marginTop:top-10,marginLeft:left}}>
+        <div style={{marginTop:top-10,marginLeft:0.85*elem.left}}>
           <table cellSpacing="0px" style={{borderRadius:"2px",boxShadow:"0px 1px 1px 1px rgba(0,0,0,0.2)",backgroundColor:"white",width:width/3,height:"80px"}}>
             <tbody>
               <tr>
@@ -65,11 +66,11 @@ const CustomTooltipMobile = (props) => {
               </tr>
               <tr>
                 <td style={{paddingLeft:"8px",backgroundColor:"white",textAlign:"left",width:"50%",fontSize:"12px",fontFamily:"Helvetica"}}>In Numbers</td>
-                <th style={{paddingRight:"8px",backgroundColor:"white",textAlign:"right",fontSize:"12px",width:"50%",fontFamily:"Helvetica"}}>{tooltipData}%</th>
+                <th style={{paddingRight:"8px",backgroundColor:"white",textAlign:"right",fontSize:"12px",width:"50%",fontFamily:"Helvetica"}}>{befData[key]}</th>
               </tr>
               <tr>
                 <td style={{paddingLeft:"8px",backgroundColor:"white",textAlign:"left",width:"50%",fontSize:"12px",fontFamily:"Helvetica"}}>In Percent</td>
-                <th style={{paddingRight:"8px",backgroundColor:"white",textAlign:"right",fontSize:"12px",width:"50%",fontFamily:"Helvetica"}}>{befData[key]}</th>
+                <th style={{paddingRight:"8px",backgroundColor:"white",textAlign:"right",fontSize:"12px",width:"50%",fontFamily:"Helvetica"}}>{tooltipData}%</th>
               </tr>
             </tbody>
           </table>
