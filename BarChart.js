@@ -15,34 +15,35 @@ const renderLabelContent = (props) => {
         widthc = w.innerWidth || e.clientWidth || g.clientWidth,
         heightc = w.innerHeight|| e.clientHeight|| g.clientHeight,
         fontSize;
-    if(heightc > widthc)
-      fontSize="11px";
+    let mobile = heightc > widthc;
+    if(mobile)
+      fontSize="14px";
     else
-      fontSize="11px";
+      fontSize="12px";
   return (
     <g className="custom-label" transform={`translate(${x+width+20}, ${y+height/2}) rotate(-90)`} textAnchor={ (midAngle < -90 || midAngle >= 90) ? 'end' : 'start'}>
       <text x={0} y={0} style={{fontSize:fontSize,fontFamily:"Helvetica"}}>{`${dataKey}`}</text>
-      <line x1={0} y1={-15} x2={0} y2={-20} strokeWidth="0.5" stroke="black"></line>
+      <line x1={0} y1={-15} x2={0} y2={-20} strokeWidth={mobile ? "1" :"0.5"} stroke="black"></line>
     </g>
   );
 };
 
-const CustomTooltip = (props) => {
+const CustomTooltipLaptop = (props) => {
     const { mouseX,mouseY, payload, label,key,tooltipData,name,value,befData } = props.vals;
     return (
         <div style={{backgroundColor:"white",borderBottom:"1px solid rgba(0,0,0,0.1)",boxShadow:"0px 1px 1px 1px rgba(0,0,0,0.2)",borderRadius:"2px",pointerEvents:'none',padding:"3px",top:mouseY,left:mouseX,width:"150px",height:"80px",position:"absolute"}}>
           <table cellSpacing="0px" style={{backgroundColor:"white",width:"150px",height:"80px"}}>
             <tbody>
               <tr>
-                <th  colSpan={2} style={{backgroundColor:"white",borderBottom:"1px solid rgba(0,0,0,0.1)",textAlign:"left",fontSize:"12px",fontFamily:"Helvetica"}}>{key}</th>
+                <th  colSpan={2} style={{paddingLeft:"8px",backgroundColor:"white",borderBottom:"1px solid rgba(0,0,0,0.1)",textAlign:"left",fontSize:"12px",fontFamily:"Helvetica"}}>{key}</th>
               </tr>
               <tr>
-                <td style={{paddingLeft:"5px",backgroundColor:"white",textAlign:"left",width:"50%",fontSize:"12px",fontFamily:"Helvetica"}}>In Numbers</td>
-                <th style={{paddingRight:"5px",backgroundColor:"white",textAlign:"right",fontSize:"12px",width:"50%",fontFamily:"Helvetica"}}>{tooltipData}%</th>
+                <td style={{paddingLeft:"8px",backgroundColor:"white",textAlign:"left",width:"50%",fontSize:"12px",fontFamily:"Helvetica"}}>In Numbers</td>
+                <th style={{paddingRight:"8px",backgroundColor:"white",textAlign:"right",fontSize:"12px",width:"50%",fontFamily:"Helvetica"}}>{befData[key]}</th>
               </tr>
               <tr>
-                <td style={{paddingLeft:"5px",backgroundColor:"white",textAlign:"left",width:"50%",fontSize:"12px",fontFamily:"Helvetica"}}>In Percent</td>
-                <th style={{paddingRight:"5px",backgroundColor:"white",textAlign:"right",fontSize:"12px",width:"50%",fontFamily:"Helvetica"}}>{befData[key]}</th>
+                <td style={{paddingLeft:"8px",backgroundColor:"white",textAlign:"left",width:"50%",fontSize:"12px",fontFamily:"Helvetica"}}>In Percent</td>
+                <th style={{paddingRight:"8px",backgroundColor:"white",textAlign:"right",fontSize:"12px",width:"50%",fontFamily:"Helvetica"}}>{tooltipData}%</th>
               </tr>
             </tbody>
           </table>
@@ -50,6 +51,32 @@ const CustomTooltip = (props) => {
     );
 }
 
+const CustomTooltipMobile = (props) => {
+    const { mouseX,mouseY, payload, marginLeft,label,width,height,bar,key,tooltipData,name,value,befData } = props.vals;
+    console.log(props);
+    let left = width/3;
+    let top = bar.getBoundingClientRect().height-45;
+    return (
+        <div style={{marginTop:top-10,marginLeft:left}}>
+          <table cellSpacing="0px" style={{borderRadius:"2px",boxShadow:"0px 1px 1px 1px rgba(0,0,0,0.2)",backgroundColor:"white",width:width/3,height:"80px"}}>
+            <tbody>
+              <tr>
+                <th  colSpan={2} style={{paddingLeft:"8px",backgroundColor:"white",borderBottom:"1px solid rgba(0,0,0,0.1)",textAlign:"left",fontSize:"12px",fontFamily:"Helvetica"}}>{key}</th>
+              </tr>
+              <tr>
+                <td style={{paddingLeft:"8px",backgroundColor:"white",textAlign:"left",width:"50%",fontSize:"12px",fontFamily:"Helvetica"}}>In Numbers</td>
+                <th style={{paddingRight:"8px",backgroundColor:"white",textAlign:"right",fontSize:"12px",width:"50%",fontFamily:"Helvetica"}}>{tooltipData}%</th>
+              </tr>
+              <tr>
+                <td style={{paddingLeft:"8px",backgroundColor:"white",textAlign:"left",width:"50%",fontSize:"12px",fontFamily:"Helvetica"}}>In Percent</td>
+                <th style={{paddingRight:"8px",backgroundColor:"white",textAlign:"right",fontSize:"12px",width:"50%",fontFamily:"Helvetica"}}>{befData[key]}</th>
+              </tr>
+            </tbody>
+          </table>
+          <div style={{width: 0,marginLeft:width/6-10,filter: "drop-shadow(0px 2px 1px rgba(0,0,0,0.2))",height: 0,borderStyle: "solid",borderWidth: "13px 8px 0 8px",borderColor: "#fff transparent transparent transparent"}}/>
+        </div>
+    );
+}
 
 export default class PBarChart extends Component {
 
@@ -92,22 +119,27 @@ export default class PBarChart extends Component {
         width = w.innerWidth || e.clientWidth || g.clientWidth,
         height = w.innerHeight|| e.clientHeight|| g.clientHeight,
         fontSize;
-    if(height > width)
-      fontSize="12px";
+    let mobile = height > width;
+    if(mobile)
+      fontSize="13px";
     else
-      fontSize="12px";
-    width = height > width ? window.innerWidth-20 : window.innerHeight-20;
+      fontSize="13px";
+
+    width = mobile ? window.innerWidth+100 : window.innerHeight;
+    let marginLeft = height > width ? "-30px" : "0";
     let dataObj = this.props.data;
     let color = gradient([
       '#255AEE',
       '#9DD2FF'
     ], dataObj.length);
-    height = 100;
+    height = mobile ? width/5 : 100;
     this.setState({
+      marginLeft:marginLeft,
       height:height,
       width:width,
       fontSize:fontSize,
-      color:color
+      color:color,
+      mobile:mobile
     })
     let dat = {};
     let keys = Object.keys(dataObj[0]);
@@ -155,7 +187,6 @@ export default class PBarChart extends Component {
       let check = bar.querySelector(".recharts-bar-rectangles").getBoundingClientRect().width;
       let text = bar.querySelector(".custom-label text");
       let label = bar.querySelector(".recharts-text.recharts-label");
-      console.log(label);
       let check2 = label.getBoundingClientRect().width;;
       let comp = text.getBoundingClientRect().width;
       text.setAttribute('x',-comp/2);
@@ -181,7 +212,7 @@ export default class PBarChart extends Component {
     const { data } = this.state;
     return (
       <div className="bar-charts">
-        <div className="bar-chart-wrapper" style={{width:0,height:0}}>
+        <div className="bar-chart-wrapper" style={{marginTop:"35px",marginLeft:this.state.marginLeft,width:0,height:0}}>
             <BarChart width={this.state.height} height={this.state.width} maxHeight={500} maxWidth={100} data={data} horizontal={true} margin={{ top: 85, right: 35, bottom: -5, left: 5 }}>
               {
                 Object.keys(data[0]).map((key,index)=>{
@@ -194,7 +225,7 @@ export default class PBarChart extends Component {
                 })
               }
             </BarChart>
-            {this.state.active ? <CustomTooltip vals={this.state}/> : null}
+            {this.state.active ? (this.state.mobile ? <CustomTooltipMobile vals={this.state}/> : <CustomTooltipLaptop vals={this.state}/>) : null}
         </div>
       </div>
     );
