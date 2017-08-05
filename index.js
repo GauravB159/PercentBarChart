@@ -6,15 +6,15 @@ import PBarChart from './BarChart';
 const data = [
   {
     "category": "Cattle Protection",
-    "count": 290
+    "count": 40
   },
   {
     "category": "Crime",
-    "count": 84
+    "count": 34
   },
   {
     "category": "Honour Killing",
-    "count": 127
+    "count": 27
   },
   {
     "category": "Other",

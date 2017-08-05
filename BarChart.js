@@ -4,7 +4,7 @@ import { BarChart, Bar, Brush, Cell, CartesianGrid, ReferenceLine, ReferenceDot,
 import { scaleOrdinal, schemeCategory10 } from 'd3-scale';
 import _ from 'lodash';
 import gradient from 'gradient-color';
-
+import {scaleLinear} from 'd3-scale';
 
 const renderLabelContent = (props) => {
   const { value, percent, x, y, midAngle,dataKey,width,height } = props;
@@ -29,13 +29,16 @@ const renderLabelContent = (props) => {
 };
 
 const CustomTooltipLaptop = (props) => {
-    const { mouseX,mouseY, payload, label,key,tooltipData,name,value,befData } = props.vals;
+    const { mouseX,mouseY, payload, label,key,tooltipData,name,value,befData,width } = props.vals;
+    let myScale = scaleLinear()
+                  .domain([0, width-135])
+                  .range([0, 1]);
     return (
-        <div style={{backgroundColor:"white",borderBottom:"1px solid rgba(0,0,0,0.1)",boxShadow:"0px 1px 1px 1px rgba(0,0,0,0.2)",borderRadius:"2px",pointerEvents:'none',padding:"3px",top:mouseY,left:mouseX,width:"150px",height:"80px",position:"absolute"}}>
+        <div style={{backgroundColor:"white",borderBottom:"1px solid rgba(0,0,0,0.1)",boxShadow:"0px 1px 1px 1px rgba(0,0,0,0.2)",borderRadius:"2px",pointerEvents:'none',padding:"3px",top:mouseY-90,left: mouseX + 15 - (myScale(mouseX))*170,width:"150px",height:"80px",position:"absolute"}}>
           <table cellSpacing="0px" style={{backgroundColor:"white",width:"150px",height:"80px"}}>
             <tbody>
               <tr>
-                <th  colSpan={2} style={{paddingLeft:"8px",backgroundColor:"white",borderBottom:"1px solid rgba(0,0,0,0.1)",textAlign:"left",fontSize:"12px",fontFamily:"Helvetica"}}>{key}</th>
+                <th  colSpan={2} style={{paddingLeft:"8px",backgroundColor:"white",borderBottom:"1px solid rgba(0,0,0,0.1)",textAlign:"left",fontSize:"13px",fontFamily:"Helvetica"}}>{key}</th>
               </tr>
               <tr>
                 <td style={{paddingLeft:"8px",backgroundColor:"white",textAlign:"left",width:"50%",fontSize:"12px",fontFamily:"Helvetica"}}>In Numbers</td>
@@ -54,11 +57,19 @@ const CustomTooltipLaptop = (props) => {
 const CustomTooltipMobile = (props) => {
     const { mouseX,mouseY, payload, marginLeft,label,width,height,bar,key,tooltipData,name,value,befData } = props.vals;
     let elem = bar.getBoundingClientRect()
-    let left = width/3;
+    let left = 0.85*elem.left;
     let top = elem.height-45;
-    console.log(props);
+    let myScale = scaleLinear()
+                  .domain([0, width])
+                  .range([(width)/14, (4.5*width)/6]);
+
+    let tooltipScale = scaleLinear()
+                  .domain([0, width])
+                  .range([(width)/20, (2*width)/3]);
+
+    console.log(myScale(0.85*elem.left),0.85*elem.left);
     return (
-        <div style={{marginTop:top-10,marginLeft:0.85*elem.left}}>
+        <div style={{marginTop:top-10,marginLeft:myScale(left)}}>
           <table cellSpacing="0px" style={{borderRadius:"2px",boxShadow:"0px 1px 1px 1px rgba(0,0,0,0.2)",backgroundColor:"white",width:width/3,height:"80px"}}>
             <tbody>
               <tr>
@@ -74,7 +85,7 @@ const CustomTooltipMobile = (props) => {
               </tr>
             </tbody>
           </table>
-          <div style={{width: 0,marginLeft:width/6-10,filter: "drop-shadow(0px 2px 1px rgba(0,0,0,0.2))",height: 0,borderStyle: "solid",borderWidth: "13px 8px 0 8px",borderColor: "#fff transparent transparent transparent"}}/>
+          <div style={{width: 0,marginLeft:tooltipScale(left)/1.5,filter: "drop-shadow(0px 2px 1px rgba(0,0,0,0.2))",height: 0,borderStyle: "solid",borderWidth: "13px 8px 0 8px",borderColor: "#fff transparent transparent transparent"}}/>
         </div>
     );
 }
@@ -133,7 +144,7 @@ export default class PBarChart extends Component {
       '#255AEE',
       '#9DD2FF'
     ], dataObj.length);
-    height = mobile ? width/5 : 100;
+    height = mobile ? width/5 : 116;
     this.setState({
       marginLeft:marginLeft,
       height:height,
@@ -213,7 +224,7 @@ export default class PBarChart extends Component {
     const { data } = this.state;
     return (
       <div className="bar-charts">
-        <div className="bar-chart-wrapper" style={{marginTop:"35px",marginLeft:this.state.marginLeft,width:0,height:0}}>
+        <div className="bar-chart-wrapper" style={{marginTop:"35px",marginLeft:this.state.marginLeft,height:0,width:0}}>
             <BarChart width={this.state.height} height={this.state.width} maxHeight={500} maxWidth={100} data={data} horizontal={true} margin={{ top: 85, right: 35, bottom: -5, left: 5 }}>
               {
                 Object.keys(data[0]).map((key,index)=>{
