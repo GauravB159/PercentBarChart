@@ -193,7 +193,13 @@ export default class PBarChart extends Component {
     })
   }
 
-  componentDidMount(){
+
+  handleBarAnimationStart = () => {
+    console.log('Animation start');
+  };
+
+  handleBarAnimationEnd = () => {
+    console.log('Animation end');
     let bars=Array.from(document.getElementsByClassName('recharts-bar'));
     bars.forEach((bar)=>{
       let check = bar.querySelector(".recharts-bar-rectangles").getBoundingClientRect().width;
@@ -210,15 +216,7 @@ export default class PBarChart extends Component {
         label.style.fill="none";
       }
     })
-  }
-
-  handleBarAnimationStart = () => {
-    console.log('Animation start');
-  };
-
-  handleBarAnimationEnd = () => {
-    console.log('Animation end');
-  };
+    };
 
   render() {
     const { data } = this.state;
@@ -230,7 +228,7 @@ export default class PBarChart extends Component {
                 Object.keys(data[0]).map((key,index)=>{
                   if(key === 'name' || key === 'value') return;
                   return(
-                      <Bar stackId="0" key={key} dataKey={key} fill={this.state.color[index]} isAnimationActive = {false} label={renderLabelContent} onMouseLeave={this.handleMouseLeave} onMouseMove={this.handleMouseMove}>
+                      <Bar stackId="0" key={key} dataKey={key} fill={this.state.color[index]}  onAnimationStart={this.handleBarAnimationStart} onAnimationEnd={this.handleBarAnimationEnd} isAnimationActive = {true} label={renderLabelContent} onMouseLeave={this.handleMouseLeave} onMouseMove={this.handleMouseMove}>
                         <LabelList dataKey={key} horizontal={true} className="custom" perc={true} style={{fontFamily:"Helvetica",fill:"white",fontSize:this.state.fontSize,pointerEvents:'none'}}/>
                       </Bar>
                   );
