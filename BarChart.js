@@ -67,9 +67,8 @@ const CustomTooltipMobile = (props) => {
                   .domain([0, width])
                   .range([(width)/20, (2*width)/3]);
 
-    console.log(myScale(0.85*elem.left),0.85*elem.left);
     return (
-        <div style={{marginTop:top-10,marginLeft:myScale(left)}}>
+        <div style={{marginTop:top-4,marginLeft:myScale(left)}}>
           <table cellSpacing="0px" style={{borderRadius:"2px",boxShadow:"0px 1px 1px 1px rgba(0,0,0,0.2)",backgroundColor:"white",width:width/3,height:"80px"}}>
             <tbody>
               <tr>
@@ -85,7 +84,7 @@ const CustomTooltipMobile = (props) => {
               </tr>
             </tbody>
           </table>
-          <div style={{width: 0,marginLeft:tooltipScale(left)/1.5,filter: "drop-shadow(0px 2px 1px rgba(0,0,0,0.2))",height: 0,borderStyle: "solid",borderWidth: "13px 8px 0 8px",borderColor: "#fff transparent transparent transparent"}}/>
+          <div style={{width: 0,marginLeft:tooltipScale(left)/1.5,filter: "drop-shadow(0px 2px 1px rgba(0,0,0,0.2))",height: 0,borderStyle: "solid",borderWidth: "8px 8px 0 8px",borderColor: "#fff transparent transparent transparent"}}/>
         </div>
     );
 }
@@ -205,7 +204,7 @@ export default class PBarChart extends Component {
       let check = bar.querySelector(".recharts-bar-rectangles").getBoundingClientRect().width;
       let text = bar.querySelector(".custom-label text");
       let label = bar.querySelector(".recharts-text.recharts-label");
-      let check2 = label.getBoundingClientRect().width;;
+      let check2 = label.getBoundingClientRect().width;
       let comp = text.getBoundingClientRect().width;
       text.setAttribute('x',-comp/2);
       if(comp > check ){
